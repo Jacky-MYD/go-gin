@@ -1,9 +1,11 @@
 package apis
 
 import (
+	"encoding/json"
 	"fmt"
 	"gin/ginDemo/models"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
@@ -14,11 +16,14 @@ func IndexApi(c *gin.Context)  {
 }
 
 func AddPerson(c *gin.Context)  {
-	firstName := c.Request.FormValue("first_name")
-	lastName := c.Request.FormValue("last_name")
+
+	var user map[string]interface{}
+	result, err := ioutil.ReadAll(c.Request.Body)
+	json.Unmarshal(result, &user)
+	firstName := user["first_name"].(string)
+	lastName := user["last_name"].(string)
 
 	p := models.Person{FirstName: firstName, LastName: lastName}
-
 	ra, err := p.AddPerson()
 	if err != nil {
 		log.Fatalln(err)
